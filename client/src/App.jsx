@@ -9,6 +9,12 @@ import "./App.css";
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authMode, setAuthMode] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [authLoading, setAuthLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [authMessage, setAuthMessage] = useState("");
 
   const features = [
     {
@@ -57,15 +63,38 @@ function App() {
           <span>Interview<span className="gradient-text">X</span></span>
         </a>
 
-        <div className={`nav-links ${menuOpen ? "show" : ""}`}>
-          <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
-          <a href="#modes" onClick={() => setMenuOpen(false)}>Interview Modes</a>
-          <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
-          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-        </div>
+<div className={`nav-links ${menuOpen ? "show" : ""}`}>
+  <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+
+  <a href="#modes" onClick={() => setMenuOpen(false)}>Interview Modes</a>
+
+  <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
+
+  <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+
+  <button
+    className="login-btn"
+    onClick={() => {
+      setMenuOpen(false);
+      setAuthMode("login");
+    }}
+  >
+    Log in
+  </button>
+
+  <button
+    className="primary-btn small-btn"
+    onClick={() => {
+      setMenuOpen(false);
+      setAuthMode("signup");
+    }}
+  >
+    Sign Up
+  </button>
+</div>       
 
         <div className="nav-actions">
-          <button className="login-btn">Log in</button>
+          <button className="login-btn" onClick={() => setAuthMode("login")}>Log in</button>
           <button className="primary-btn small-btn" onClick={() => document.getElementById("modes").scrollIntoView({behavior:"smooth"})}>
             Get Started <ArrowRight size={16}/>
           </button>
@@ -243,6 +272,130 @@ function App() {
         <p>Practice smarter. Perform better. Get hired.</p>
         <span>© 2026 InterviewX AI. Final Year Project.</span>
       </footer>
+
+      {authMode && (
+        <div className="auth-overlay">
+          <div className="auth-card">
+            <button className="auth-close" onClick={() => setAuthMode(null)}>×</button>
+
+            <div className="auth-logo">
+              <span className="logo-icon"><BrainCircuit size={27}/></span>
+              <span>Interview<span className="gradient-text">X</span> AI</span>
+            </div>
+
+            <span className="eyebrow">YOUR AI INTERVIEW PARTNER</span>
+            <h2>{authMode === "login" ? "Welcome Back!" : "Create Your Account"}</h2>
+            <p className="auth-subtitle">
+              {authMode === "login"
+                ? "Sign in to continue your interview preparation."
+                : "Start your journey towards interview success."}
+            </p>
+
+<form className="auth-form" onSubmit={async (e) => {
+  e.preventDefault();
+  setAuthLoading(true);
+  setAuthMessage("");
+
+  const formData = new FormData(e.currentTarget);
+  const payload = {
+    email: formData.get("email"),
+    password: formData.get("password")
+  };
+
+  if (authMode === "signup") {
+    payload.name = formData.get("name");
+  }
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/api/auth/" +
+      (authMode === "login" ? "login" : "register"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Authentication failed");
+
+    if (authMode === "login") {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setLoggedInUser(data.user);
+      setAuthMode(null);
+    }
+
+    setAuthMessage(data.message);
+    alert(data.message);
+  } catch (error) {
+    setAuthMessage(error.message);
+    alert(error.message);
+  } finally {
+    setAuthLoading(false);
+  }
+}}>
+{authMode === "signup" && (
+  <label>
+    Full Name
+    <input
+      name="name"
+      type="text"
+      placeholder="Enter your full name"
+      required
+    />
+  </label>
+)}
+
+<label>
+  Email Address
+  <input
+    name="email"
+    type="email"
+    placeholder="Enter your email"
+    required
+  />
+</label>
+
+<label>
+  Password
+  <div className="password-field">
+    <input
+      name="password"
+      type={showPassword ? "text" : "password"}
+      placeholder="Enter your password"
+      minLength="6"
+      required
+    />
+    <button type="button" onClick={() => setShowPassword(!showPassword)}>
+      {showPassword ? "Hide" : "Show"}
+    </button>
+  </div>
+</label>
+              <button type="submit" className="primary-btn auth-submit">
+                {authMode === "login" ? "Sign In" : "Create Account"}
+                <ArrowRight size={18}/>
+              </button>
+            </form>
+
+            <p className="auth-switch">
+              {authMode === "login" ? "Don't have an account?" : "Already have an account?"}
+              <button onClick={() => {
+                setAuthMode(authMode === "login" ? "signup" : "login");
+                setShowPassword(false);
+              }}>
+                {authMode === "login" ? "Create Account" : "Log In"}
+              </button>
+            </p>
+
+            <button className="back-home" onClick={() => setAuthMode(null)}>
+              ← Back to Homepage
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
