@@ -6,6 +6,73 @@ import {
   Clock, ChevronRight, Star
 } from "lucide-react";
 import "./App.css";
+import VideoInterview from "./VideoInterview";
+function CameraSetup({ onBack, onContinue }) {
+  const [cameraReady, setCameraReady] = useState(false);
+  const [stream, setStream] = useState(null);
+  const [error, setError] = useState("");
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+
+      setStream(mediaStream);
+      setCameraReady(true);
+      setError("");
+
+      setTimeout(() => {
+        const video = document.getElementById("interview-camera-preview");
+        if (video) video.srcObject = mediaStream;
+      }, 100);
+    } catch (err) {
+      setError("Camera or microphone permission denied. Please allow access.");
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    setStream(null);
+    setCameraReady(false);
+  };
+
+  return (
+    <div className="video-interview-setup">
+      <button onClick={() => { stopCamera(); onBack(); }}>
+        ← Back to Setup
+      </button>
+
+      <h1>Camera & Microphone Setup</h1>
+      <p>Check your camera and microphone before starting the interview.</p>
+
+      <div className="camera-preview-card">
+        <video
+          id="interview-camera-preview"
+          autoPlay
+          muted
+          playsInline
+          className="camera-preview"
+        />
+
+        {!cameraReady && <p className="camera-placeholder">Camera preview will appear here</p>}
+
+        <button className="primary-btn" onClick={startCamera}>
+          {cameraReady ? "Camera Connected" : "Enable Camera & Microphone"}
+        </button>
+
+        {error && <p className="camera-error">{error}</p>}
+
+        {cameraReady && (
+          <button className="primary-btn" onClick={() => { stopCamera(); onContinue(); }}>
+            Continue to Interview →
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 function Dashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState("Dashboard");
 const [menuOpen, setMenuOpen] = useState(false);
@@ -287,7 +354,91 @@ const [chatMessages, setChatMessages] = useState([
     </div>
   );
 }
+function VideoInterviewSetup({ onBack }) {
+  const [role, setRole] = useState("Software Developer");
+  const [experience, setExperience] = useState("Fresher");
+  const [difficulty, setDifficulty] = useState("Medium");
+  const [cameraSetupOpen, setCameraSetupOpen] = useState(false);
+  const [interviewStream, setInterviewStream] = useState(null);
+  const [interviewOpen, setInterviewOpen] = useState(false);
+if (interviewOpen) {
+  return (
+    <VideoInterview
+      role={role}
+      experience={experience}
+      difficulty={difficulty}
+      stream={interviewStream}
+      onBack={() => {
+        setInterviewOpen(false);
+        setInterviewStream(null);
+      }}
+    />
+  );
+}
+
+if (cameraSetupOpen) {
+  return (
+    <CameraSetup
+      onBack={() => setCameraSetupOpen(false)}
+      onContinue={(mediaStream) => {
+        setInterviewStream(mediaStream);
+        setInterviewOpen(true);
+      }}
+    />
+  );
+}  
+return (
+<div className="video-interview-setup">
+      <button onClick={onBack}>← Back to Home</button>
+
+      <h1>Video Interview Setup</h1>
+      <p>Configure your AI-powered face-to-face interview.</p>
+
+      <div style={{ maxWidth: "500px", marginTop: "30px" }}>
+        <label>Job Role</label>
+        <select value={role} onChange={e => setRole(e.target.value)}>
+          <option>Software Developer</option>
+          <option>Frontend Developer</option>
+          <option>Backend Developer</option>
+          <option>Data Analyst</option>
+          <option>AI/ML Engineer</option>
+          <option>Java Developer</option>
+        </select>
+
+        <br /><br />
+
+        <label>Experience Level</label>
+        <select value={experience} onChange={e => setExperience(e.target.value)}>
+          <option>Fresher</option>
+          <option>0-1 Years</option>
+          <option>1-3 Years</option>
+          <option>3-5 Years</option>
+        </select>
+
+        <br /><br />
+
+        <label>Interview Difficulty</label>
+        <select value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+
+        <br /><br />
+
+<button
+  className="primary-btn"
+  onClick={() => setCameraSetupOpen(true)}
+>
+  Continue to Camera Setup →
+</button>
+      </div>
+    </div>
+  );
+}
+
 function App() {
+const [videoInterviewOpen, setVideoInterviewOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -340,6 +491,15 @@ const [loggedInUser, setLoggedInUser] = useState(() => {
     { icon: Mic, title: "Voice Interview", desc: "Improve communication", tag: "Flexible" },
     { icon: MessageSquare, title: "Text Interview", desc: "Practice at your pace", tag: "Easy" }
   ];
+
+if (videoInterviewOpen) {
+  return (
+    <VideoInterviewSetup
+      onBack={() => setVideoInterviewOpen(false)}
+    />
+  );
+}
+
 if (loggedInUser) {
   return (
     <Dashboard
@@ -509,7 +669,13 @@ if (loggedInUser) {
                   <div className="mode-icon"><Icon size={27}/></div>
                   <h3>{mode.title}</h3>
                   <p>{mode.desc}</p>
-                  <button onClick={() => alert("Interview functionality will be connected in the next development phase.")}>
+<button onClick={() => {
+  if (mode.title === "Video Interview") {
+    setVideoInterviewOpen(true);
+  } else {
+    alert("This interview mode is coming soon!");
+  }
+}}>
                     Explore Mode <ArrowRight size={16}/>
                   </button>
                 </div>

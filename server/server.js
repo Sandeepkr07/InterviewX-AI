@@ -5,6 +5,7 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const chatRoutes = require("./routes/chat");
+const interviewRoutes = require("./routes/interview");
 const app = express();
 
 app.use(cors());
@@ -28,6 +29,7 @@ app.get("/api/health", (req, res) => {
 // Authentication routes
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/interview", interviewRoutes);
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
