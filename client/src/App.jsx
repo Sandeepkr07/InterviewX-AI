@@ -8,7 +8,16 @@ import {
 import "./App.css";
 function Dashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState("Dashboard");
-
+const [menuOpen, setMenuOpen] = useState(false);
+const [chatOpen, setChatOpen] = useState(false);
+const [chatMessage, setChatMessage] = useState("");
+const [chatLoading, setChatLoading] = useState(false);
+const [chatMessages, setChatMessages] = useState([
+  {
+    role: "bot",
+    text: "Hey! 👋 Welcome to InterviewX AI. How can I help you with your interview preparation?"
+  }
+]);
   const items = [
     ["Dashboard", BarChart3],
     ["AI Interview", Video],
@@ -18,41 +27,56 @@ function Dashboard({ user, onLogout }) {
     ["Settings", Zap],
   ];
 
-  return (
+      return (
     <div className="dx-dashboard">
-      <aside className="dx-sidebar">
-        <div className="dx-brand">
-          <div className="dx-brand-icon"><BrainCircuit /></div>
-          <span>InterviewX<span className="dx-brand-ai">AI</span></span>
-        </div>
+<div className="dx-menu-wrap">
+  <div className="dx-menu-header">
+    <div className="dx-brand">
+      <div className="dx-brand-icon">
+        <BrainCircuit />
+      </div>
+      <span>InterviewX<span className="dx-brand-ai">AI</span></span>
+    </div>
 
-        <p className="dx-menu-label">WORKSPACE</p>
+    <button
+      className="dx-hamburger"
+      onClick={() => setMenuOpen(!menuOpen)}
+    >
+      {menuOpen ? <X size={25} /> : <Menu size={25} />}
+    </button>
+  </div>
 
-        <div className="dx-menu">
-          {items.map(([name, Icon]) => (
-            <button
-              key={name}
-              className={`dx-menu-item ${activeTab === name ? "active" : ""}`}
-              onClick={() => setActiveTab(name)}
-            >
-              <Icon size={19} />
-              <span>{name}</span>
-            </button>
-          ))}
-        </div>
+  {menuOpen && (
+    <div className="dx-dropdown">
+      <p>WORKSPACE</p>
 
-        <div className="dx-sidebar-bottom">
-          <div className="dx-help-card">
-            <Sparkles size={22} />
-            <h4>Need interview tips?</h4>
-            <p>Practice regularly and improve your skills.</p>
-          </div>
-          <button className="dx-logout" onClick={onLogout}>
-            <ArrowRight size={18} /> Sign out
-          </button>
-          <p className="dx-version">INTERVIEWX AI · 2026</p>
-        </div>
-      </aside>
+      {items.map(([name, Icon]) => (
+        <button
+          key={name}
+          className={`dx-dropdown-item ${activeTab === name ? "active" : ""}`}
+          onClick={() => {
+            setActiveTab(name);
+            setMenuOpen(false);
+          }}
+        >
+          <Icon size={19} />
+          <span>{name}</span>
+        </button>
+      ))}
+
+      <div className="dx-dropdown-divider"></div>
+
+      <button
+        className="dx-dropdown-item dx-signout"
+        onClick={onLogout}
+      >
+        <ArrowRight size={18} />
+        <span>Sign out</span>
+      </button>
+    </div>
+  )}
+</div>
+  
 
       <main className="dx-main">
         <header className="dx-topbar">
@@ -160,6 +184,104 @@ function Dashboard({ user, onLogout }) {
   Built with <span>♥</span> by Sandeep Kumar
 </a>
           </footer>
+{/* Floating Pink AI Assistant */}
+<div className="dx-ai-widget">
+
+  {chatOpen && (
+    <div className="dx-ai-chat">
+      <div className="dx-ai-chat-header">
+        <div>
+          <strong>🩷 InterviewX AI</strong>
+          <small>Online • Your AI Assistant</small>
+        </div>
+        <button onClick={() => setChatOpen(false)}>
+          <X size={21} />
+        </button>
+      </div>
+
+      <div className="dx-ai-messages">
+        {chatMessages.map((msg, index) => (
+          <div
+            key={index}
+            className={`dx-ai-message ${msg.role}`}
+          >
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+<form
+  className="dx-ai-input"
+  onSubmit={async (e) => {
+    e.preventDefault();
+
+    const userText = chatMessage.trim();
+    if (!userText || chatLoading) return;
+
+    setChatMessages((prev) => [
+      ...prev,
+      { role: "user", text: userText }
+    ]);
+
+    setChatMessage("");
+    setChatLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userText })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "AI response failed");
+      }
+
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "bot", text: data.reply }
+      ]);
+
+    } catch (error) {
+      console.error("Chat Error:", error);
+
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: "AI is temporarily unavailable. Please try again."
+        }
+      ]);
+
+    } finally {
+      setChatLoading(false);
+    }
+  }}
+>
+  <input
+    value={chatMessage}
+    onChange={(e) => setChatMessage(e.target.value)}
+    placeholder="Ask me anything..."
+  />
+
+  <button type="submit" disabled={chatLoading}>
+    {chatLoading ? "..." : "Send"}
+  </button>
+</form>
+    </div>
+  )}
+
+  <button
+    className="dx-ai-float"
+    onClick={() => setChatOpen(!chatOpen)}
+  >
+    {chatOpen ? <X size={27} /> : <MessageSquare size={27} />}
+  </button>
+</div>
         </section>
       </main>
     </div>

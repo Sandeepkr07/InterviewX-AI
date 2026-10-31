@@ -1251,3 +1251,240 @@ footer span {
 .dx-linkedin:hover {
   color: #70baff;
 }
+/* Mobile sidebar bottom fix */
+@media (max-width: 650px) {
+  .dx-sidebar-bottom {
+    display: block !important;
+    margin-top: 15px;
+  }
+
+  .dx-help-card {
+    padding: 12px;
+  }
+
+  .dx-help-card h4 {
+    margin: 7px 0 4px;
+  }
+
+  .dx-logout {
+    margin-top: 8px;
+    padding: 12px;
+    background: #202944;
+    border-radius: 10px;
+    color: #ffffff;
+  }
+
+  .dx-version {
+    margin-bottom: 0;
+  }
+}
+/* InterviewX AI Hamburger Navigation */
+.dx-menu-wrap {
+  position: relative;
+  z-index: 100;
+  background: #101528;
+  border-bottom: 1px solid #303650;
+}
+
+.dx-menu-header {
+  min-height: 70px;
+  padding: 10px 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dx-menu-header .dx-brand {
+  margin: 0;
+}
+
+.dx-hamburger {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: #252747;
+  border: 1px solid #49436f;
+  border-radius: 11px;
+  color: white;
+  cursor: pointer;
+}
+
+.dx-dropdown {
+  position: absolute;
+  right: 4%;
+  top: 65px;
+  width: 245px;
+  padding: 14px;
+  background: #171e34;
+  border: 1px solid #45466c;
+  border-radius: 15px;
+  box-shadow: 0 15px 45px #0009;
+  z-index: 200;
+}
+
+.dx-dropdown > p {
+  color: #858eaa;
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 5px 10px;
+}
+
+.dx-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  margin: 3px 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #c0c7dc;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.dx-dropdown-item:hover,
+.dx-dropdown-item.active {
+  background: #302a55;
+  color: white;
+}
+
+.dx-dropdown-divider {
+  height: 1px;
+  background: #343c55;
+  margin: 10px 0;
+}
+
+.dx-dropdown-item.dx-signout {
+  color: #ff8298;
+}
+
+.dx-sidebar {
+  display: none !important;
+}
+/* Pink Floating AI Assistant */
+.dx-ai-widget {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 9999;
+}
+
+.dx-ai-float {
+  width: 62px;
+  height: 62px;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  background: linear-gradient(135deg, #ff4fa3, #a855f7);
+  box-shadow: 0 0 20px #ff4fa399;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  animation: dx-float 2.5s ease-in-out infinite;
+}
+
+@keyframes dx-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+.dx-ai-chat {
+  position: absolute;
+  right: 0;
+  bottom: 78px;
+  width: min(350px, calc(100vw - 32px));
+  height: 440px;
+  background: #171426;
+  border: 1px solid #ed69b5;
+  border-radius: 19px;
+  box-shadow: 0 12px 45px #0009;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dx-ai-chat-header {
+  padding: 16px;
+  background: linear-gradient(120deg, #ed489b, #9251d9);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dx-ai-chat-header strong,
+.dx-ai-chat-header small {
+  display: block;
+}
+
+.dx-ai-chat-header small {
+  margin-top: 5px;
+  font-size: 11px;
+  opacity: .85;
+}
+
+.dx-ai-chat-header button {
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.dx-ai-messages {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dx-ai-message {
+  max-width: 85%;
+  padding: 11px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: white;
+}
+
+.dx-ai-message.bot {
+  align-self: flex-start;
+  background: #30233e;
+}
+
+.dx-ai-message.user {
+  align-self: flex-end;
+  background: linear-gradient(120deg, #ed489b, #9251d9);
+}
+
+.dx-ai-input {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #393047;
+}
+
+.dx-ai-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid #59415f;
+  border-radius: 10px;
+  background: #241d31;
+  color: white;
+  outline: none;
+}
+
+.dx-ai-input button {
+  width: 42px;
+  border: none;
+  border-radius: 10px;
+  background: #ed489b;
+  color: white;
+  cursor: pointer;
+}
