@@ -227,7 +227,7 @@ const [chatMessages, setChatMessages] = useState([
     setChatLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/chat", {
+      const response = await fetch("https://interviewx-ai-ky4z.onrender.com/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -605,7 +605,7 @@ if (loggedInUser) {
 
   try {
     const response = await fetch(
-      "http://127.0.0.1:5000/api/auth/" +
+      "https://interviewx-ai-ky4z.onrender.com/api/auth/" +
       (authMode === "login" ? "login" : "register"),
       {
         method: "POST",
