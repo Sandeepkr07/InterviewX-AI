@@ -916,3 +916,25 @@ footer span {
     padding: 13px;
   }
 }
+@media (max-width: 720px) {
+  .menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: #17182a !important;
+    color: #ffffff !important;
+    border: 1px solid #44465e !important;
+    border-radius: 10px;
+    position: relative;
+    z-index: 100000;
+  }
+
+  .menu-btn svg {
+    width: 25px;
+    height: 25px;
+    stroke: #ffffff !important;
+    stroke-width: 2.5;
+  }
+}
