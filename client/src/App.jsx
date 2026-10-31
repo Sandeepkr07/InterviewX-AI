@@ -6,14 +6,178 @@ import {
   Clock, ChevronRight, Star
 } from "lucide-react";
 import "./App.css";
+function Dashboard({ user, onLogout }) {
+  const [activeTab, setActiveTab] = useState("Dashboard");
 
+  const items = [
+    ["Dashboard", BarChart3],
+    ["AI Interview", Video],
+    ["My Interviews", FileText],
+    ["Resume Analyzer", BrainCircuit],
+    ["Performance", Target],
+    ["Settings", Zap],
+  ];
+
+  return (
+    <div className="dx-dashboard">
+      <aside className="dx-sidebar">
+        <div className="dx-brand">
+          <div className="dx-brand-icon"><BrainCircuit /></div>
+          <span>InterviewX<span className="dx-brand-ai">AI</span></span>
+        </div>
+
+        <p className="dx-menu-label">WORKSPACE</p>
+
+        <div className="dx-menu">
+          {items.map(([name, Icon]) => (
+            <button
+              key={name}
+              className={`dx-menu-item ${activeTab === name ? "active" : ""}`}
+              onClick={() => setActiveTab(name)}
+            >
+              <Icon size={19} />
+              <span>{name}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="dx-sidebar-bottom">
+          <div className="dx-help-card">
+            <Sparkles size={22} />
+            <h4>Need interview tips?</h4>
+            <p>Practice regularly and improve your skills.</p>
+          </div>
+          <button className="dx-logout" onClick={onLogout}>
+            <ArrowRight size={18} /> Sign out
+          </button>
+          <p className="dx-version">INTERVIEWX AI · 2026</p>
+        </div>
+      </aside>
+
+      <main className="dx-main">
+        <header className="dx-topbar">
+          <div>
+            <p className="dx-breadcrumb">Workspace / {activeTab}</p>
+            <h2>{activeTab}</h2>
+          </div>
+          <div className="dx-profile">
+            <div className="dx-avatar">
+              {(user?.name || "U").charAt(0).toUpperCase()}
+            </div>
+            <div className="dx-profile-info">
+              <b>{user?.name || "User"}</b>
+              <span>Free Account</span>
+            </div>
+          </div>
+        </header>
+
+        <section className="dx-content">
+          <div className="dx-hero">
+            <div className="dx-hero-content">
+              <span className="dx-eyebrow">
+                <Sparkles size={14} /> YOUR AI CAREER COMPANION
+              </span>
+              <h1>Welcome back, {user?.name?.split(" ")[0] || "there"}! 👋</h1>
+              <p>Your next opportunity starts with practice. Get interview-ready with your personal AI coach.</p>
+              <button className="dx-primary-btn" onClick={() => setActiveTab("AI Interview")}>
+                Start an Interview <ArrowRight size={18} />
+              </button>
+            </div>
+            <div className="dx-hero-art">
+              <div className="dx-orbit dx-orbit-one"></div>
+              <div className="dx-orbit dx-orbit-two"></div>
+              <div className="dx-hero-brain"><BrainCircuit size={76} /></div>
+            </div>
+          </div>
+
+          <div className="dx-section-heading">
+            <div><h2>Your Overview</h2><p>Track your preparation</p></div>
+          </div>
+
+          <div className="dx-stats">
+            {[
+              ["Total Interviews", "00", Video, "purple"],
+              ["Average Score", "—", Target, "blue"],
+              ["Practice Hours", "00", Clock, "green"]
+            ].map(([title, value, Icon, color]) => (
+              <div className="dx-stat-card" key={title}>
+                <div className={`dx-stat-icon ${color}`}><Icon /></div>
+                <p>{title}</p>
+                <h2>{value}</h2>
+                <span>Start practising to see your progress</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="dx-section-heading">
+            <div><h2>Choose Your Interview Mode</h2><p>Practice with AI-powered sessions</p></div>
+          </div>
+
+          <div className="dx-modes">
+            {[
+              ["Technical Interview", Code2, "Practice coding and technical questions.", "purple"],
+              ["HR Interview", MessageSquare, "Build confidence for HR conversations.", "blue"],
+              ["Voice Interview", Mic, "Improve your speaking skills.", "orange"]
+            ].map(([title, Icon, desc, color]) => (
+              <div className="dx-mode-card" key={title}>
+                <div className={`dx-mode-icon ${color}`}><Icon /></div>
+                <span className="dx-mode-tag">AI POWERED</span>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+                <button onClick={() => alert("This module is coming soon!")}>
+                  Explore Mode <ArrowRight size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="dx-bottom-grid">
+            <div className="dx-activity-card">
+              <h2>Recent Activity</h2>
+              <div className="dx-empty">
+                <Clock size={27} />
+                <h3>No interviews yet</h3>
+                <p>Your practice history will appear here.</p>
+              </div>
+            </div>
+            <div className="dx-tip-card">
+              <div className="dx-tip-icon"><Star size={23} /></div>
+              <span>DAILY TIP</span>
+              <h3>Confidence comes from preparation.</h3>
+              <p>Practise answering questions aloud. Clear communication matters.</p>
+              <div className="dx-tip-footer">INTERVIEWX AI <Sparkles size={16} /></div>
+            </div>
+          </div>
+
+          <footer className="dx-footer">
+            <span>© 2026 InterviewX AI</span>
+<a
+  href="https://www.linkedin.com/in/itsandeepkr"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="dx-linkedin"
+>
+  Built with <span>♥</span> by Sandeep Kumar
+</a>
+          </footer>
+        </section>
+      </main>
+    </div>
+  );
+}
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const [authLoading, setAuthLoading] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+const [loggedInUser, setLoggedInUser] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("user")) || null;
+  } catch {
+    return null;
+  }
+});
   const [authMessage, setAuthMessage] = useState("");
 
   const features = [
@@ -54,7 +218,18 @@ function App() {
     { icon: Mic, title: "Voice Interview", desc: "Improve communication", tag: "Flexible" },
     { icon: MessageSquare, title: "Text Interview", desc: "Practice at your pace", tag: "Easy" }
   ];
-
+if (loggedInUser) {
+  return (
+    <Dashboard
+      user={loggedInUser}
+      onLogout={() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setLoggedInUser(null);
+      }}
+    />
+  );
+}
   return (
     <div className="app">
       <nav className="navbar">
